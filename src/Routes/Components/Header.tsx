@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { Link, useMatch } from "react-router-dom";
 import { useState } from "react";
+import { type } from "os";
 
 const Nav = styled.div`
   display: flex;
@@ -86,7 +87,7 @@ function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const HomeMatch = useMatch("/");
   const tvMatch = useMatch("/tv");
-  const openSearch = () => setSearchOpen((prev) => !prev);
+  const toggleSearch = () => setSearchOpen((prev) => !prev);
   console.log(HomeMatch);
   console.log(tvMatch);
   return (
@@ -119,8 +120,12 @@ function Header() {
         </Items>
       </Col>
       <Col>
-        <Search onClick={openSearch}>
+        <Search>
           <motion.svg
+            transition={{
+              type: "linear",
+            }}
+            onClick={toggleSearch}
             animate={{ x: searchOpen ? -200 : 0 }}
             fill="currentColor"
             viewBox="0 0 20 20"
@@ -133,6 +138,9 @@ function Header() {
             ></path>
           </motion.svg>
           <Input
+            transition={{
+              type: "linear",
+            }}
             animate={{ scaleX: searchOpen ? 1 : 0 }}
             placeholder="search for titles"
           ></Input>
