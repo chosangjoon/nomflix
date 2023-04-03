@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import { Link, useMatch } from "react-router-dom";
 import { useState } from "react";
 import { type } from "os";
@@ -94,9 +94,19 @@ function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const HomeMatch = useMatch("/");
   const tvMatch = useMatch("/tv");
-  const toggleSearch = () => setSearchOpen((prev) => !prev);
-  console.log(HomeMatch);
-  console.log(tvMatch);
+  const toggleSearch = () => {
+    if (searchOpen) {
+      inputAnimation.start({
+        scaleX: 0,
+      });
+    } else {
+      inputAnimation.start({
+        scaleX: 1,
+      });
+    }
+    setSearchOpen((prev) => !prev);
+  };
+  const inputAnimation = useAnimation();
   return (
     <Nav>
       <Col>
@@ -149,7 +159,7 @@ function Header() {
               type: "linear",
             }}
             initial={{ scaleX: 0 }}
-            animate={{ scaleX: searchOpen ? 1 : 0 }}
+            animate={inputAnimation}
             placeholder="search for titles"
           ></Input>
         </Search>
