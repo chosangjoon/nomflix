@@ -80,7 +80,14 @@ const Search = styled.span`
 const Input = styled(motion.input)`
   transform-origin: right center;
   position: absolute;
-  right: 90px;
+  right: 5px;
+  padding: 5px 10px;
+  padding-left: 35px;
+  z-index: -1;
+  color: white;
+  font-size: 16px;
+  background-color: transparent;
+  border: 1px solid ${(props) => props.theme.white.lighter};
 `;
 
 function Header() {
@@ -126,7 +133,7 @@ function Header() {
               type: "linear",
             }}
             onClick={toggleSearch}
-            animate={{ x: searchOpen ? -200 : 0 }}
+            animate={{ x: searchOpen ? -155 : 0 }}
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
@@ -141,6 +148,7 @@ function Header() {
             transition={{
               type: "linear",
             }}
+            initial={{ scaleX: 0 }}
             animate={{ scaleX: searchOpen ? 1 : 0 }}
             placeholder="search for titles"
           ></Input>
