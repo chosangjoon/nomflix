@@ -5,10 +5,12 @@ import styled from "styled-components";
 import { makeImagePath } from "../Utils";
 import { AnimatePresence, motion } from "framer-motion";
 import useWindowDimensions from "../useWindowDimesions";
+import { off } from "process";
 
 const Wrapper = styled.div`
   background-color: black;
   overflow-x: hidden;
+  height: 200vh;
 `;
 const Loader = styled.div`
   height: 20vh;
@@ -48,11 +50,14 @@ const Row = styled(motion.div)`
   width: 100%;
 `;
 
-const Box = styled(motion.div)`
+const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-color: white;
+  background-image: url(${(props) => props.bgPhoto});
+  background-position: center;
+  background-size: cover;
   height: 100px;
   color: red;
-  font-size: 48px;
+  font-size: 24px;
 `;
 // const rowVariants = {
 //   hidden: {
@@ -74,13 +79,16 @@ function Home() {
     getMovies
   );
   const [index, setIndex] = useState(0);
+  const offset = 6;
   const increaseIndex = () => {
-    if (leaving) return;
-    setLeaving(true);
-    setIndex((prev) => prev + 1);
-    else if (index===3){
-      index=0;
+    if (data) {
+      if (leaving) return;
+      const totalMovies = data?.results.length - 1;
+      const maxIndex = Math.floor(totalMovies / offset) - 1;
+      setLeaving(true);
+      setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
+    console.log(index);
   };
 
   const width = useWindowDimensions();
@@ -116,9 +124,15 @@ function Home() {
                   key={index}
                   /* key만 바꿀뿐이지만 react는 새로운 Row컴포넌트로 인식 */
                 >
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <Box key={i}>{i}</Box>
-                  ))}
+                  {data?.results
+                    .slice(1)
+                    .slice(offset * index, offset * index + offset)
+                    .map((movie) => (
+                      <Box
+                        key={movie.id}
+                        bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+                      />
+                    ))}
                 </Row>
               </AnimatePresence>
             </Slider>
