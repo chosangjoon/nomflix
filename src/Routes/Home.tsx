@@ -55,7 +55,7 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-image: url(${(props) => props.bgPhoto});
   background-position: center;
   background-size: cover;
-  height: 100px;
+  height: 130px;
   color: red;
   font-size: 24px;
   &:first-child {
@@ -79,17 +79,30 @@ const boxvar = {
     },
   },
 };
-// const rowVariants = {
-//   hidden: {
-//     x: window.innerWidth + 10,
-//   },
-//   visible: {
-//     x: 0,
-//   },
-//   exit: {
-//     x: -window.innerWidth - 10,
-//   },
-// };
+
+const Info = styled(motion.div)`
+  padding: 8px;
+  position: absolute;
+  width: 100%;
+  color: white;
+  bottom: 0;
+  background-color: ${(props) => props.theme.black.lighter};
+  opacity: 0;
+  h4 {
+    text-align: center;
+    font-size: 12px;
+  }
+`;
+const InfoVar = {
+  hovering: {
+    opacity: 1,
+    transition: {
+      delay: 0.5,
+      duration: 0.3,
+      type: "tween",
+    },
+  },
+};
 
 function Home() {
   // useQuery hook을 사용하여 영화 데이터를 가져옴
@@ -155,7 +168,11 @@ function Home() {
                         transition={{ type: "tween" }}
                         key={movie.id}
                         bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                      />
+                      >
+                        <Info variants={InfoVar}>
+                          <h4>{movie.title}</h4>
+                        </Info>
+                      </Box>
                     ))}
                 </Row>
               </AnimatePresence>
