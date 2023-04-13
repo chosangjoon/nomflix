@@ -55,6 +55,7 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-image: url(${(props) => props.bgPhoto});
   background-position: center;
   background-size: cover;
+  border-radius: 5px;
   height: 130px;
   color: red;
   font-size: 24px;
@@ -174,7 +175,7 @@ function Home() {
       setLeaving(true);
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
-    console.log(index);
+    // console.log(index);
   };
 
   const toggleLeaving = () => {
@@ -192,7 +193,8 @@ function Home() {
     data?.results.find(
       (movie) => movie.id + "" === bigMovieMatch.params.movieId
     );
-  console.log(clickedMovie);
+  // console.log(clickedMovie);
+  // console.log(bigMovieMatch);
   return (
     <>
       <Wrapper>
