@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { useQuery } from "react-query";
 import { IGetMoviesResult, getMovies } from "../api";
 import styled from "styled-components";
 import { makeImagePath } from "../Utils";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
-import useWindowDimensions from "../useWindowDimesions";
-import { Navigate, useMatch, useNavigate } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
+import MovieSlider from "./Components/MovieSlider";
 
 const Wrapper = styled.div`
   background-color: black;
@@ -18,14 +17,14 @@ const Loader = styled.div`
   justify-content: center;
   align-items: center;
 `;
-const Banner = styled.div<{ bgPhoto: string }>`
+const Banner = styled.div<{ bgphoto: string }>`
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 60px;
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
-    url(${(props) => props.bgPhoto});
+    url(${(props) => props.bgphoto});
   background-size: cover;
 `;
 
@@ -36,36 +35,6 @@ const Title = styled.h2`
 const OverView = styled.p`
   font-size: 20px;
   width: 50%;
-`;
-
-const Slider = styled.div`
-  position: relative;
-  top: -100px;
-`;
-const Row = styled(motion.div)`
-  display: grid;
-  gap: 5px;
-  grid-template-columns: repeat(6, 1fr);
-  position: absolute;
-  width: 100%;
-`;
-
-const Box = styled(motion.div)<{ bgPhoto: string }>`
-  background-color: white;
-  background-image: url(${(props) => props.bgPhoto});
-  background-position: center;
-  background-size: cover;
-  border-radius: 5px;
-  height: 130px;
-  color: red;
-  font-size: 24px;
-  cursor: pointer;
-  &:first-child {
-    transform-origin: center left;
-  }
-  &:last-child {
-    transform-origin: center right;
-  }
 `;
 const Select = styled(motion.div)`
   position: absolute;
@@ -98,44 +67,6 @@ const SelectOverview = styled.p`
   position: relative;
   padding: 20px;
 `;
-const boxvar = {
-  normal: {
-    scale: 1,
-  },
-  hovering: {
-    scale: 1.3,
-    y: -50,
-    transition: {
-      delay: 0.5,
-      duration: 0.3,
-      type: "tween",
-    },
-  },
-};
-
-const Info = styled(motion.div)`
-  padding: 8px;
-  position: absolute;
-  width: 100%;
-  color: white;
-  bottom: 0;
-  background-color: ${(props) => props.theme.black.lighter};
-  opacity: 0;
-  h4 {
-    text-align: center;
-    font-size: 12px;
-  }
-`;
-const InfoVar = {
-  hovering: {
-    opacity: 1,
-    transition: {
-      delay: 0.5,
-      duration: 0.3,
-      type: "tween",
-    },
-  },
-};
 
 const Overlay = styled(motion.div)`
   position: fixed;
@@ -147,54 +78,27 @@ const Overlay = styled(motion.div)`
 `;
 
 function Home() {
-  // useQuery hook을 사용하여 영화 데이터를 가져옴
-  // "movies"와 "nowPlaying"을 쿼리 키로 사용하고, getMovies 함수를 통해 데이터를 가져옴
+  // Importing hooks from the react-router-dom and react-use libraries
   const navigate = useNavigate();
   const bigMovieMatch = useMatch("/movies/:movieId");
 
   const { scrollY } = useScroll();
-
-  const [index, setIndex] = useState(0);
-
-  const offset = 6;
-
-  const width = useWindowDimensions();
-
-  const [leaving, setLeaving] = useState(false);
-
+  // Fetching movie data using the useQuery hook from the react-query library
   const { data, isLoading } = useQuery<IGetMoviesResult>(
-    ["movies", "nowPlaying"],
-    getMovies
+    ["movies", "popular"],
+    () => getMovies("popular")
   );
-
-  const increaseIndex = () => {
-    if (data) {
-      if (leaving) return;
-      const totalMovies = data?.results.length - 1;
-      const maxIndex = Math.floor(totalMovies / offset) - 1;
-      setLeaving(true);
-      setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
-    }
-    // console.log(index);
-  };
-
-  const toggleLeaving = () => {
-    setLeaving((prev) => !prev);
-  };
-
-  const onBoxClick = (movieId: number) => {
-    navigate(`/movies/${movieId}`);
-  };
+  // Function to handle clicking on the overlay
   const onOverlayClick = () => {
     navigate("/");
   };
+
+  // Finding the clicked movie based on the movieId parameter in the URL
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
     data?.results.find(
       (movie) => movie.id + "" === bigMovieMatch.params.movieId
     );
-  // console.log(clickedMovie);
-  // console.log(bigMovieMatch);
   return (
     <>
       <Wrapper>
@@ -203,45 +107,15 @@ function Home() {
         ) : (
           <>
             <Banner
-              onClick={increaseIndex}
-              bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}
+              bgphoto={makeImagePath(data?.results[0].backdrop_path || "")}
             >
               <Title>{data?.results[0].title}</Title>
               <OverView>{data?.results[0].overview}</OverView>
             </Banner>
-            <Slider>
-              <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
-                <Row
-                  // variants={rowVariants}
-                  initial={{ x: width + 10 }}
-                  animate={{ x: 0 }}
-                  exit={{ x: -width - 10 }}
-                  transition={{ type: "tween", duration: 1 }}
-                  key={index}
-                  /* key만 바꿀뿐이지만 react는 새로운 Row컴포넌트로 인식 */
-                >
-                  {data?.results
-                    .slice(1)
-                    .slice(offset * index, offset * index + offset)
-                    .map((movie) => (
-                      <Box
-                        layoutId={movie.id + ""}
-                        variants={boxvar}
-                        initial="normal"
-                        whileHover="hovering"
-                        transition={{ type: "tween" }}
-                        key={movie.id}
-                        bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                        onClick={() => onBoxClick(movie.id)}
-                      >
-                        <Info variants={InfoVar}>
-                          <h4>{movie.title}</h4>
-                        </Info>
-                      </Box>
-                    ))}
-                </Row>
-              </AnimatePresence>
-            </Slider>
+            <MovieSlider data={data} kind="popular" />
+            <MovieSlider data={data} kind="popular" />
+            <MovieSlider data={data} kind="popular" />
+            <MovieSlider data={data} kind="popular" />
             <AnimatePresence>
               {bigMovieMatch ? (
                 <>
