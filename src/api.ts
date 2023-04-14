@@ -32,9 +32,9 @@ export interface IGetMoviesResult {
 }
 
 // getMovies 함수는 현재 상영 중인 영화 정보를 가져오는 API를 호출합니다.
-export function getMovies() {
+export function getMovies(kind: string) {
   // fetch 함수를 사용하여 API를 호출하고, 응답을 JSON 형태로 변환합니다.
-  return fetch(`${BASE_PATH}/movie/popular?api_key=${API_KEY}`).then(
+  return fetch(`${BASE_PATH}/movie/${kind}?api_key=${API_KEY}`).then(
     (response) => response.json()
   );
 }
