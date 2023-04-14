@@ -27,3 +27,10 @@ function useWindowDimensions() {
 }
 
 export default useWindowDimensions;
+
+export enum Types {
+  "now_playing" = "now_playing",
+  "popular" = "popular",
+  "top_rated" = "top_rated",
+  "upcoming" = "upcoming",
+}
