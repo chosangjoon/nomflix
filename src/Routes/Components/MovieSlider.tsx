@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IGetMoviesResult } from "../../api";
 import styled from "styled-components";
 import { makeImagePath } from "../../Utils";
@@ -53,7 +53,6 @@ const rowVariants = {
   },
 };
 const Box = styled(motion.div)<{ bgphoto: string }>`
-  background-color: white;
   background-image: url(${(props) => props.bgphoto});
   background-position: center center;
   background-size: cover;
@@ -124,6 +123,25 @@ function MovieSlider({ data, kind }: IMovieProps) {
 
   // Initializing state variable for the current page index
   const [index, setIndex] = useState(0);
+
+  const [slidertitle, setSliderTitle] = useState("");
+
+  useEffect(() => {
+    switch (kind) {
+      case "popular":
+        setSliderTitle("Popular");
+        break;
+      case "now":
+        setSliderTitle("nowPlaying");
+        break;
+      case "upcoming":
+        setSliderTitle("Upcoming");
+        break;
+      case "top_rated":
+        setSliderTitle("Top_Rated");
+        break;
+    }
+  }, [kind]);
   // Function to increase the current page index
   const increaseIndex = () => {
     if (data) {
@@ -169,7 +187,7 @@ function MovieSlider({ data, kind }: IMovieProps) {
 
   return (
     <Slider>
-      <SliderTitle>PoPular</SliderTitle>
+      <SliderTitle>{slidertitle}</SliderTitle>
       <AnimatePresence
         initial={false}
         onExitComplete={toggleLeaving}
@@ -185,11 +203,10 @@ function MovieSlider({ data, kind }: IMovieProps) {
           key={index}
         >
           {data?.results
-            .slice(1)
             .slice(offset * index, offset * index + offset)
             .map((movie) => (
               <Box
-                layoutId={movie.id + ""}
+                layoutId={`${kind}` + movie.id + ""}
                 variants={boxvar}
                 initial="normal"
                 whileHover="hovering"

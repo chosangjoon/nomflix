@@ -39,7 +39,7 @@ const OverView = styled.p`
 const Select = styled(motion.div)`
   position: absolute;
   width: 40vw;
-  height: 80vh;
+  height: 70vh;
   background-color: ${(props) => props.theme.black.lighter};
   left: 0;
   right: 0;
@@ -84,10 +84,23 @@ function Home() {
 
   const { scrollY } = useScroll();
   // Fetching movie data using the useQuery hook from the react-query library
-  const { data, isLoading } = useQuery<IGetMoviesResult>(
+  const { data: popularData, isLoading } = useQuery<IGetMoviesResult>(
     ["movies", "popular"],
     () => getMovies("popular")
   );
+  const { data: nowData } = useQuery<IGetMoviesResult>(
+    ["movies", "nowplaying"],
+    () => getMovies("now_playing")
+  );
+  const { data: upcomingData } = useQuery<IGetMoviesResult>(
+    ["movies", "upcoming"],
+    () => getMovies("upcoming")
+  );
+  const { data: topData } = useQuery<IGetMoviesResult>(
+    ["movies", "top_rated"],
+    () => getMovies("top_rated")
+  );
+
   // Function to handle clicking on the overlay
   const onOverlayClick = () => {
     navigate("/");
@@ -96,7 +109,7 @@ function Home() {
   // Finding the clicked movie based on the movieId parameter in the URL
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
-    data?.results.find(
+    popularData?.results.find(
       (movie) => movie.id + "" === bigMovieMatch.params.movieId
     );
   return (
@@ -107,15 +120,17 @@ function Home() {
         ) : (
           <>
             <Banner
-              bgphoto={makeImagePath(data?.results[0].backdrop_path || "")}
+              bgphoto={makeImagePath(
+                popularData?.results[0].backdrop_path || ""
+              )}
             >
-              <Title>{data?.results[0].title}</Title>
-              <OverView>{data?.results[0].overview}</OverView>
+              <Title>{popularData?.results[0].title}</Title>
+              <OverView>{popularData?.results[0].overview}</OverView>
             </Banner>
-            <MovieSlider data={data} kind="popular" />
-            <MovieSlider data={data} kind="popular" />
-            <MovieSlider data={data} kind="popular" />
-            <MovieSlider data={data} kind="popular" />
+            <MovieSlider data={popularData} kind="popular" />
+            <MovieSlider data={nowData} kind="now" />
+            <MovieSlider data={upcomingData} kind="upcoming" />
+            <MovieSlider data={topData} kind="top_rated" />
             <AnimatePresence>
               {bigMovieMatch ? (
                 <>
