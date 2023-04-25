@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { makeImagePath } from "../../Utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
+import React from "react";
 
 const Slider = styled.div`
   padding: 0 20px;
@@ -201,8 +202,10 @@ function MovieSlider({ data, kind }: IMovieProps) {
           custom={isNext}
           transition={{ type: "tween", duration: 1 }}
           key={index}
+          /* key만 바꿀뿐이지만 react는 새로운 Row컴포넌트로 인식 */
         >
           {data?.results
+            .slice(1)
             .slice(offset * index, offset * index + offset)
             .map((movie) => (
               <Box

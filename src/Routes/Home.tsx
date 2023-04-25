@@ -5,6 +5,7 @@ import { makeImagePath } from "../Utils";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
 import MovieSlider from "./Components/MovieSlider";
+import React from "react";
 
 const Wrapper = styled.div`
   background-color: black;
